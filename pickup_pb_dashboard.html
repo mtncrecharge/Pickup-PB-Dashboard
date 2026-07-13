@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pickup PB Dashboard</title>
+<style>
+:root{
+  --bg:#06090f;--surface:#0d1117;--surface2:#161b22;--border:rgba(59,130,246,0.15);
+  --primary:#3b82f6;--accent:#22c55e;--red:#ef4444;--yellow:#f59e0b;--orange:#f97316;
+  --teal:#14b8a6;--text:#e6edf3;--muted:rgba(230,237,243,0.45);
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;overflow-x:hidden;min-height:100vh;transition:max-width .3s}
+body.desktop{max-width:100%;margin:0}
+body.desktop .header{max-width:100%}
+body.desktop .sum-grid{max-width:100%;padding:12px 24px 6px}
+body.desktop .sfwrap{max-width:100%;padding:8px 24px 4px}
+body.desktop .frow{padding:4px 24px;max-width:100%}
+body.desktop .frow select{max-width:220px}
+body.desktop .cnt{padding:2px 24px 6px}
+body.desktop .twrap{padding:0 24px 24px;max-width:100%}
+body.desktop table{font-size:13px}
+body.desktop .footer{padding:16px 24px}
+
+/* Header */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;position:sticky;top:0;z-index:100}
+.hrow{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:800}
+.logo-icon{color:var(--primary);font-size:18px}
+.logo span{color:var(--primary)}
+.htitle{font-size:12px;font-weight:700}
+.hsub{font-size:9px;color:var(--muted)}
+.hright{display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.htime{font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
+.btnr{background:rgba(59,130,246,0.1);border:1px solid var(--border);color:var(--primary);padding:5px 8px;border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s}
+.btnr:active{opacity:.7}
+
+/* Summary */
+.sum-grid{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 6px}
+.sc{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;min-width:58px;flex:1}
+.sc-l{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+.sc-v{font-size:18px;font-weight:800;margin-top:2px}
+
+/* Filter */
+.sfwrap{padding:8px 12px 4px}
+.srel{position:relative}
+.sinput{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px 9px 34px;color:var(--text);font-size:13px;outline:none}
+.sinput::placeholder{color:var(--muted)}
+.sicon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
+.frow{display:flex;gap:6px;padding:4px 12px}
+select{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 8px;font-size:12px;outline:none;-webkit-appearance:none}
+.cnt{font-size:11px;color:var(--muted);padding:2px 12px 6px;font-weight:600}
+
+/* Table */
+.twrap{overflow-x:auto;padding:0 12px 12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:8px 6px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+td{padding:8px 6px;border-bottom:1px solid rgba(59,130,246,0.06);vertical-align:top}
+tr.mrow{cursor:pointer}
+tr.mrow:hover td{background:rgba(59,130,246,0.04)}
+tr.arow td{background:rgba(59,130,246,0.07)}
+tr.det-row td{padding:0}
+.det-inner{padding:10px 8px;background:var(--surface2);border-radius:8px;margin:4px 0}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.det-item .lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase}
+.det-item .val{font-size:12px;font-weight:600;margin-top:2px}
+.dbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dbtn{flex:1;min-width:80px;padding:7px 6px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .2s}
+.dbtn-ops{background:rgba(59,130,246,0.12);color:var(--primary);border:1px solid rgba(59,130,246,0.25)}
+.dbtn:active{opacity:.7}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 7px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.b-online{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3)}
+.b-offline{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)}
+.b-type{background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid rgba(59,130,246,0.3)}
+.b-pickup{background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3)}
+.b-lock{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)}
+
+/* Terminal cells */
+.tid{color:var(--primary);font-size:11px;font-weight:700}
+.tname{font-size:11px;color:var(--text);line-height:1.3;margin-top:2px}
+.tarea{font-size:10px;color:var(--muted);margin-top:1px}
+
+/* PB Bar */
+.pbbar{width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:4px}
+.pbfill{height:100%;border-radius:2px}
+
+/* Loading */
+.loading{text-align:center;padding:24px;color:var(--muted);font-size:12px}
+
+/* Footer */
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted)}
+
+/* Popup */
+.leaflet-popup-content-wrapper{background:#0d1117;border:1px solid rgba(59,130,246,0.2);border-radius:10px;color:#fff}
+.leaflet-popup-tip{background:#0d1117}
+.pu-id{font-size:11px;font-weight:800;color:var(--primary);margin-bottom:4px}
+.pu-name{font-size:12px;font-weight:600;margin-bottom:6px}
+.pu-row{font-size:11px;color:#aaa;margin-bottom:2px;display:flex;justify-content:space-between;gap:8px}
+.pu-row span{color:#fff;font-weight:600}
+
+/* Sort indicator */
+.sort-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:10px;padding:0 2px;vertical-align:middle}
+.sort-btn.active{color:var(--primary)}
+
+/* Empty */
+.empty-state{text-align:center;color:var(--muted);font-size:12px;padding:24px 0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hrow">
+    <div class="logo">
+      <span class="logo-icon">⚡</span>
+      Re<span>Charge</span>
+    </div>
+    <div style="text-align:center">
+      <div class="htitle">Pickup PB</div>
+      <div class="hsub" id="hsub">Auto refresh 60 detik</div>
+    </div>
+    <div class="hright">
+      <div class="dot"></div>
+      <div class="htime" id="htime">--:--:--</div>
+      <button class="btnr" onclick="loadData(true)">⟳</button>
+      <button class="btnr" id="btnLayout" onclick="toggleLayout()" title="Toggle layout">🖥</button>
+    </div>
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="sum-grid" id="summary"></div>
+
+<!-- Filter -->
+<div class="sfwrap">
+  <div class="srel">
+    <span class="sicon">🔍</span>
+    <input id="srch" class="sinput" placeholder="Cari terminal / area / ID..." oninput="applyFilter()">
+  </div>
+</div>
+<div class="frow">
+  <select id="fConn" onchange="applyFilter()">
+    <option value="">Semua Koneksi</option>
+    <option value="true">Online</option>
+    <option value="false">Offline</option>
+  </select>
+  <select id="fType" onchange="applyFilter()">
+    <option value="">Semua Tipe</option>
+  </select>
+</div>
+<div class="frow">
+  <select id="fArea" onchange="applyFilter()">
+    <option value="">Semua Area</option>
+  </select>
+</div>
+<div class="cnt" id="cnt">0 terminal</div>
+
+<!-- Table -->
+<div class="twrap" id="twrap">
+  <div class="loading" id="loading">⏳ Memuat data...</div>
+  <table id="tbl" style="display:none">
+    <thead>
+      <tr>
+        <th>Terminal</th>
+        <th>PB% <button class="sort-btn" id="sort-pb" onclick="toggleSort('pb')">↕</button></th>
+        <th>Pickup <button class="sort-btn" id="sort-pickup" onclick="toggleSort('pickup')">↕</button></th>
+        <th>Info</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="footer">Pickup PB Dashboard — ReCharge Internal</div>
+
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTMWv2mD7Ji9EY5gAuC0tRquUY7qQGBT-rI4IpsU6JfrM-7XrLOom3Q4GTpt1dWYbEYEH146BWpPfxD/pub?gid=1421174182&single=true&output=csv';
+
+let DATA = [], FILTERED = [];
+let openDetail = null;
+let sortField = 'pickup', sortDir = 'desc';
+
+// ── Clock ──
+setInterval(()=>{
+  const n = new Date();
+  document.getElementById('htime').textContent =
+    String(n.getHours()).padStart(2,'0') + '.' +
+    String(n.getMinutes()).padStart(2,'0') + '.' +
+    String(n.getSeconds()).padStart(2,'0');
+}, 1000);
+
+// ── CSV Parser ──
+function parseCSV(txt){
+  const rows=[]; let cur='',inq=false,row=[];
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(c==='"'){inq=!inq;}
+    else if(c===','&&!inq){row.push(cur);cur='';}
+    else if((c==='\n'||c==='\r')&&!inq){
+      if(cur||row.length){row.push(cur);rows.push(row);}
+      cur='';row=[];if(c==='\r'&&txt[i+1]==='\n')i++;
+    } else cur+=c;
+  }
+  if(cur||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+
+function safeInt(v){ const n=parseInt(v); return isNaN(n)?0:n; }
+function safePct(v){ if(!v||v.startsWith('#')) return '0%'; return String(v).trim(); }
+
+// ── Load Data ──
+async function loadData(force=false){
+  document.getElementById('hsub').textContent = 'Memuat...';
+  try{
+    const t = await fetch(CSV_URL + '&t=' + Date.now()).then(r=>r.text());
+    const parsed = parseCSV(t).slice(1)
+      .filter(r=>r[0]&&r[0].trim())
+      .map(r=>{
+        const g = i => r[i]!=null ? String(r[i]).replace(/[\r\n\t]/g,'').trim() : '';
+        const id = g(0);
+        return {
+          id, name:g(1), type:g(2),
+          conn: g(3).toLowerCase()==='true',
+          slots: safeInt(g(4)),
+          pbPct: safePct(g(5)),
+          pbN: parseFloat(safePct(g(5))) || 0,
+          area: g(6),
+          lat: parseFloat(g(7))||null,
+          lng: parseFloat(g(8))||null,
+          emptySlot: safeInt(g(9)),
+          pbLock: safeInt(g(10)),
+          currentPB: safeInt(g(11)),
+          ideal: safeInt(g(12)),
+          pickup: safeInt(g(13)),
+          ops: id ? `https://ops.recharge.sh/terminal/${id}` : ''
+        };
+      });
+
+    // Guard
+    if(!force && DATA.length > 0 && parsed.length < DATA.length * 0.3){
+      document.getElementById('hsub').textContent = '⏳ Sheets refresh...';
+      return;
+    }
+
+    DATA = parsed;
+    fillFilters();
+    applyFilter();
+    document.getElementById('hsub').textContent = 'Auto refresh 60 detik';
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('tbl').style.display = DATA.length ? 'table' : 'none';
+  } catch(e){
+    document.getElementById('hsub').textContent = '⚠ Gagal memuat';
+    document.getElementById('loading').textContent = '⚠ Gagal memuat data. Coba reload.';
+  }
+}
+
+// ── Fill Filters ──
+function fillFilters(){
+  const areas = [...new Set(DATA.map(r=>r.area).filter(Boolean))].sort();
+  const types = [...new Set(DATA.map(r=>r.type).filter(Boolean))].sort();
+
+  const fa = document.getElementById('fArea');
+  const curA = fa.value;
+  fa.innerHTML = '<option value="">Semua Area</option>' + areas.map(a=>`<option value="${a}">${a}</option>`).join('');
+  fa.value = curA;
+
+  const ft = document.getElementById('fType');
+  const curT = ft.value;
+  ft.innerHTML = '<option value="">Semua Tipe</option>' + types.map(t=>`<option value="${t}">${t}</option>`).join('');
+  ft.value = curT;
+}
+
+// ── Sort ──
+function toggleSort(field){
+  if(sortField === field) sortDir = sortDir==='desc'?'asc':'desc';
+  else { sortField=field; sortDir='desc'; }
+  ['pb','pickup'].forEach(f=>{
+    const btn = document.getElementById('sort-'+f);
+    if(btn) btn.className = 'sort-btn' + (f===sortField?' active':'');
+    if(btn) btn.textContent = f===sortField?(sortDir==='desc'?'↓':'↑'):'↕';
+  });
+  applyFilter();
+}
+
+// ── Apply Filter ──
+function applyFilter(){
+  const s = document.getElementById('srch').value.toLowerCase();
+  const conn = document.getElementById('fConn').value;
+  const area = document.getElementById('fArea').value;
+  const type = document.getElementById('fType').value;
+
+  FILTERED = DATA.filter(r=>{
+    const ms = !s || r.name.toLowerCase().includes(s) || r.id.toLowerCase().includes(s) || r.area.toLowerCase().includes(s);
+    const mc = conn==='' || (conn==='true'&&r.conn) || (conn==='false'&&!r.conn);
+    const ma = !area || r.area===area;
+    const mt = !type || r.type===type;
+    return ms&&mc&&ma&&mt;
+  });
+
+  // Sort
+  FILTERED.sort((a,b)=>{
+    const va = sortField==='pb' ? a.pbN : a.pickup;
+    const vb = sortField==='pb' ? b.pbN : b.pickup;
+    return sortDir==='desc' ? vb-va : va-vb;
+  });
+
+  // Summary
+  const total = FILTERED.length;
+  const online = FILTERED.filter(r=>r.conn).length;
+  const offline = FILTERED.filter(r=>!r.conn).length;
+  const totalPickup = FILTERED.reduce((s,r)=>s+r.pickup, 0);
+  const totalLock = FILTERED.reduce((s,r)=>s+r.pbLock, 0);
+  const totalCurrent = FILTERED.reduce((s,r)=>s+r.currentPB, 0);
+
+  document.getElementById('summary').innerHTML = [
+    {l:'Total', v:total, c:'var(--primary)'},
+    {l:'Online', v:online, c:'var(--accent)'},
+    {l:'Offline', v:offline, c:'var(--red)'},
+    {l:'Total Pickup', v:totalPickup, c:'var(--orange)'},
+    {l:'PB Lock', v:totalLock, c:'var(--red)'},
+    {l:'Current PB', v:totalCurrent, c:'var(--teal)'},
+  ].map(x=>`<div class="sc"><div class="sc-l">${x.l}</div><div class="sc-v" style="color:${x.c}">${x.v}</div></div>`).join('');
+
+  document.getElementById('cnt').textContent = FILTERED.length + ' terminal';
+  renderTable();
+}
+
+// ── PB Color ──
+function pbColor(n){
+  if(n >= 80) return 'var(--orange)';
+  if(n >= 60) return 'var(--yellow)';
+  return 'var(--accent)';
+}
+
+// ── Render Table ──
+function renderTable(){
+  const tbody = document.getElementById('tbody');
+  openDetail = null;
+  if(!FILTERED.length){
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">Tidak ada data</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = FILTERED.map((r,i) => {
+    const pbN = r.pbN;
+    const pbFill = `background:${pbColor(pbN)};width:${Math.min(pbN,100)}%`;
+    const connBadge = r.conn
+      ? '<span class="badge b-online">● Online</span>'
+      : '<span class="badge b-offline">● Offline</span>';
+
+    const detRow = `<tr id="det-${i}" class="det-row" style="display:none"><td colspan="4">
+      <div class="det-inner">
+        <div class="det-grid">
+          <div class="det-item"><div class="lbl">Terminal ID</div><div class="val" style="font-size:10px;color:var(--primary)">${r.id}</div></div>
+          <div class="det-item"><div class="lbl">Tipe</div><div class="val"><span class="badge b-type">${r.type}</span></div></div>
+          <div class="det-item"><div class="lbl">Koneksi</div><div class="val">${connBadge}</div></div>
+          <div class="det-item"><div class="lbl">Slots</div><div class="val">${r.slots}</div></div>
+          <div class="det-item"><div class="lbl">PB%</div><div class="val" style="color:${pbColor(pbN)};font-weight:800">${r.pbPct}</div></div>
+          <div class="det-item"><div class="lbl">Current PB</div><div class="val">${r.currentPB}</div></div>
+          <div class="det-item"><div class="lbl">Ideal 50%</div><div class="val">${r.ideal}</div></div>
+          <div class="det-item"><div class="lbl">Empty Slot</div><div class="val">${r.emptySlot}</div></div>
+          <div class="det-item"><div class="lbl">PB Lock</div><div class="val" style="color:var(--red);font-weight:700">${r.pbLock}</div></div>
+          <div class="det-item"><div class="lbl">Pickup</div><div class="val" style="color:var(--orange);font-weight:800;font-size:14px">${r.pickup}</div></div>
+          <div class="det-item" style="grid-column:1/-1"><div class="lbl">Area</div><div class="val">${r.area}</div></div>
+        </div>
+        <div class="dbtns">
+          ${r.ops ? `<button onclick="window.open(this.dataset.url,'_blank')" data-url="${r.ops.replace(/"/g,'&quot;')}" class="dbtn dbtn-ops">⚡ Ops</button>` : ''}
+        </div>
+      </div>
+    </td></tr>`;
+
+    return `<tr id="row-${i}" class="mrow" onclick="toggle(${i})">
+      <td>
+        <div class="tid">${r.id.slice(0,20)}</div>
+        <div class="tname">${r.name}</div>
+        <div class="tarea">${r.area}</div>
+        <div class="pbbar"><div class="pbfill" style="${pbFill}"></div></div>
+      </td>
+      <td style="color:${pbColor(pbN)};font-weight:700">${r.pbPct}</td>
+      <td><span class="badge b-pickup">-${r.pickup} PU</span>${r.pbLock > 0 ? `<br><span class="badge b-lock" style="margin-top:3px">🔒${r.pbLock}</span>` : ''}</td>
+      <td style="font-size:10px;color:var(--muted)">
+        <div>CP: ${r.currentPB}</div>
+        <div>Id: ${r.ideal}</div>
+      </td>
+    </tr>${detRow}`;
+  }).join('');
+}
+
+// ── Toggle Row ──
+function toggle(i){
+  const det = document.getElementById('det-'+i);
+  const row = document.getElementById('row-'+i);
+  if(openDetail !== null && openDetail !== i){
+    document.getElementById('det-'+openDetail).style.display = 'none';
+    document.getElementById('row-'+openDetail).classList.remove('arow');
+  }
+  if(det.style.display === 'none'){
+    det.style.display = 'table-row';
+    row.classList.add('arow');
+    openDetail = i;
+  } else {
+    det.style.display = 'none';
+    row.classList.remove('arow');
+    openDetail = null;
+  }
+}
+
+// ── Layout toggle ──
+let isDesktop = false;
+function toggleLayout(){
+  isDesktop = !isDesktop;
+  document.body.classList.toggle('desktop', isDesktop);
+  const btn = document.getElementById('btnLayout');
+  btn.textContent = isDesktop ? '📱' : '🖥';
+  btn.title = isDesktop ? 'Switch to Mobile' : 'Switch to Desktop';
+  localStorage.setItem('pickup_layout', isDesktop ? 'desktop' : 'mobile');
+}
+
+// ── Init ──
+if(localStorage.getItem('pickup_layout') === 'desktop'){
+  isDesktop = true;
+  document.body.classList.add('desktop');
+  document.getElementById('btnLayout').textContent = '📱';
+  document.getElementById('btnLayout').title = 'Switch to Mobile';
+}
+loadData(true);
+setInterval(()=>{ loadData(); }, 60000);
+</script>
+</body>
+</html>
